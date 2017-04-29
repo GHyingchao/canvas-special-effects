@@ -1,2 +1,2 @@
 # canvas-special-effects
-there are the special effects width using canvas,and principles and ideas in every html
+there are the special effects with using canvas,and principles and ideas in every html
