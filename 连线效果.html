@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <style type="text/css">
+	#canvas{
+		background:#000;
+		display:block;
+	}
+  </style>
+ </head>
+ <body>
+	<canvas id="canvas" >
+		您的浏览器不支持canvas~
+	</canvas>
+
+	<script type="text/javascript">
+	/*
+	思路：
+	1.画200个点
+	2.让点水平垂直方向动起来
+		注：点不是随机的，把点的坐标用数组存起来
+		先把点擦掉再重新画，超过边缘弹回来，移动方向为两边（用到随机数），移动的速度由随机大小决定
+	3.两点之间距离小于50则连线（勾股定理）
+	4.鼠标经过点连线（跟3一样）
+	5.修改连线的颜色（传个布尔值）
+	*/
+		var canvas = document.getElementById("canvas");
+		var cxt = canvas.getContext("2d");
+		var w = canvas.width = window.innerWidth;//页面的宽度
+		var h = canvas.height = window.innerHeight;
+		
+		var num = 200;//生成点的个数
+		var data = [];//定义一个数组，用来存坐标
+		var move = {};
+
+		document.onmousemove = function(e){
+			move.x = e.clientX;
+			move.y = e.clientY;
+		}
+
+		//生成num个点，并且存初始坐标
+		for(var i=0;i<num;i++){
+			data[i] = {
+				x:Math.random()*w,
+				y:Math.random()*h,
+				cx:Math.random()*1-0.5,//水平方向随机移动,数字的大小决定快慢
+				cy:Math.random()*1-0.5
+			}
+			circle(data[i].x,data[i].y);
+		}
+		//主函数
+		!function draw(){
+			cxt.clearRect(0,0,w,h);
+			for(var i=0;i<num;i++){
+				data[i].x += data[i].cx;
+				data[i].y += data[i].cy;
+				if( data[i].x > w || data[i].x < 0)data[i].cx = -data[i].cx;
+				if( data[i].y > h || data[i].y < 0)data[i].cy = -data[i].cy;
+				circle(data[i].x,data[i].y);
+				for(var j=0;j<num;j++){
+					if( (data[i].x-data[j].x)*(data[i].x-data[j].x)+(data[i].y-data[j].y)*(data[i].y-data[j].y)<=50*50 ){
+						line(data[i].x,data[i].y,data[j].x,data[j].y,false);
+					}
+					if(move.x){
+						if( (data[i].x-move.x)*(data[i].x-move.x)+(data[i].y-move.y)*(data[i].y-move.y)<=100*100 ){
+							line(data[i].x,data[i].y,move.x,move.y,true);
+						}
+					}
+				}
+			}
+			window.requestAnimationFrame( draw );
+		}()
+
+		//画线
+		function line(x1,y1,x2,y2,isMove){
+			cxt.save();
+			var lin = cxt.createLinearGradient(x1,y1,x2,y2);
+			if(!isMove){
+				lin.addColorStop(0,'#33ffff');
+				lin.addColorStop(1,'#9900cc');
+			}
+			else{
+				lin.addColorStop(0,'#33cc00');
+				lin.addColorStop(1,'#ff3300');
+			}
+			cxt.strokeStyle = lin;
+			cxt.beginPath();
+			cxt.moveTo(x1,y1);
+			cxt.lineTo(x2,y2);
+			cxt.stroke();
+			cxt.restore();
+		}
+		//画圆
+		function circle(x,y){
+			cxt.save();
+			cxt.fillStyle = 'pink';
+			cxt.beginPath();
+			cxt.arc(x,y,1,0,2*Math.PI,false);
+			cxt.closePath();
+			cxt.fill();
+			cxt.restore();
+		}
+	</script>
+ </body>
+</html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <style type="text/css">
+	#canvas{
+		background:#060e1b;
+		display:block;
+	}
+  </style>
+ </head>
+ <body>
+	<canvas id="canvas" >
+		您的浏览器不支持canvas~
+	</canvas>
+
+	<script type="text/javascript">
+	/*
+	原理：bling的效果是改变圆的半径大小及渐变的颜色
+	*/
+		var canvas = document.getElementById("canvas");
+		var cxt = canvas.getContext("2d");
+		var w = canvas.width = window.innerWidth;
+		var h = canvas.height = window.innerHeight;
+
+		var num = 200;//生成点的个数
+		var data = [];//定义一个数组，用来存坐标
+
+		//生成num个点，并且存初始坐标		
+		for(var i=0;i<num;i++){
+			data[i] = {
+				x:Math.random()*w,
+				y:Math.random()*h,
+				r:Math.random()*2+2
+			}
+			Circle(data[i].x,data[i].y,data[i].r);
+		}
+		//主函数
+		!function draw(){
+			cxt.clearRect(0,0,w,h);
+			for(var i=0;i<num;i++){
+				data[i].r += Math.random()*2-1;
+				data[i].r = Math.max(0,data[i].r);//半径最小为0
+				data[i].r = Math.min(4,data[i].r);//半径最大为4
+				Circle(data[i].x,data[i].y,data[i].r);
+			}
+			window.requestAnimationFrame( draw );
+		}()
+
+		//画圆
+		function Circle(x,y,r){
+			cxt.save();
+
+			var rad = cxt.createRadialGradient(x,y,0,x,y,r);
+			rad.addColorStop(0,'rgba(255,255,255,0.8)');
+			rad.addColorStop(0.2,'rgba(255,255,255,0.8)');
+			rad.addColorStop(0.8,'rgba(255,255,255,0.2)');
+			rad.addColorStop(1,'rgba(255,255,255,0)');
+			cxt.fillStyle = rad;
+
+			cxt.beginPath();
+			cxt.arc(x,y,r,0,2*Math.PI,false);
+			cxt.closePath();
+			cxt.fill();
+
+			cxt.restore();
+		}
+	</script>
+ </body>
+</html>
